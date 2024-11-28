@@ -1,0 +1,11 @@
+.modal_content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.wrapper {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}

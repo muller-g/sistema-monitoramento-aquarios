@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(uuid())
+  name       String
+  email      String   @unique
+  password   String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  course     String
+  role       Role     @default(USUARIO)
+  user_class String
+}
+
+model Device {
+  id         String       @id @default(uuid())
+  name       String
+  specie     String
+  created_at DateTime     @default(now())
+  updated_at DateTime     @updatedAt
+  Device_Log Device_Log[]
+  Device_Image Device_Image?
+}
+
+model Device_Log {
+  id          String   @id @default(uuid())
+  ammonia     String
+  ph          String
+  temperature String
+  nitrite     String
+  alkalinity String?
+  transparency String?
+  oxygen String?
+  device_id   String
+  created_at  DateTime @default(now())
+  Device      Device   @relation(fields: [device_id], references: [id], onDelete: Cascade)
+}
+
+model Device_Image {
+  id            String   @id @default(uuid())
+  originalname  String
+  mimetype      String
+  filename      String
+  path          String
+  device_id     String @unique
+  created_at    DateTime @default(now())
+  Device        Device?   @relation(fields: [device_id], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  ADMINISTRADOR
+  USUARIO
+}

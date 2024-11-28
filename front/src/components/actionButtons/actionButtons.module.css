@@ -1,0 +1,29 @@
+.action_button {
+    width: 100%;
+    height: 250px;
+    cursor: pointer;
+    background-color: #2f9e4196;
+    border: 2px solid var(--green);
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-direction: column;
+    transition: .3s;
+}
+
+.action_button:hover {
+    transition: .3s;
+    background-color: #2F9E41;
+}
+
+.action_icon > svg {
+    font-size: 90px;
+    color: white;
+}
+
+.action_title {
+    color: white;
+    font-size: 40px;
+}
