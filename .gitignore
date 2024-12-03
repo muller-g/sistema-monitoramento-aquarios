@@ -2,4 +2,4 @@
 # Keep environment variables out of version control
 .env
 
-/public/*
+/back/public/*

@@ -1,11 +1,10 @@
 'use client';
 import ActionButtons from "@/components/actionButtons/actionButtons";
 import Container from "@/components/container/container";
+import useAuth from "@/hooks/useAuth";
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import ImportantDevicesIcon from '@mui/icons-material/ImportantDevices';
-import { useEffect } from "react";
 import styles from "./page.module.css";
-import useAuth from "@/hooks/useAuth"; 
 
 export default function Home() {
   const isAuthenticated = useAuth();

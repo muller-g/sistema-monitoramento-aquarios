@@ -34,8 +34,11 @@ export default function Device({ params }: { params: { id: string } }) {
   const [temperature, setTemperature] = useState('');
   const [nitrite, setNitrite] = useState('');
   const [ph, setPh] = useState('');
-  const [dateTimeCreated, setDateTimeCreated] = useState(dayjs());
-  const [dateTimeFinish, setDateTimeFinish] = useState(dayjs());
+  const [transparency, setTransparency] = useState('');
+  const [alkalinity, setAlkalinity] = useState('');
+  const [oxygen, setOxygen] = useState('');
+  const [dateTimeCreated, setDateTimeCreated] = useState(null);
+  const [dateTimeFinish, setDateTimeFinish] = useState(null);
   const [deviceLog, setDeviceLog] = useState<any[]>([]);
   const [device, setDevice] = useState<any>();
   const [page, setPage] = useState<any>(0);
@@ -46,7 +49,7 @@ export default function Device({ params }: { params: { id: string } }) {
   useEffect(() => {
     async function getDeviceData(){
       let deviceInfo: any = await get(`/devices/${id}`);
-      let log: any = await get(`/devices/log/${id}/`);
+      let log: any = await get(`/devices/log/${id}/?page=${page}`);
 
       setDevice(deviceInfo)
       setDeviceLog(log.data)
@@ -57,16 +60,21 @@ export default function Device({ params }: { params: { id: string } }) {
   }, [id])
 
   async function filter() {
-    let url: string = '?';
+    let url: string = '?page=' + page;
 
     if(ammonia) url += '&ammonia=' + ammonia
     if(temperature) url += '&temperature=' + temperature
     if(nitrite) url += '&nitrite=' + nitrite
     if(ph) url += '&ph=' + ph
+    if(transparency) url += '&transparency=' + transparency
+    if(alkalinity) url += '&alkalinity=' + alkalinity
+    if(oxygen) url += '&oxygen=' + oxygen
     if(dateTimeCreated) url += '&dateTimeCreated=' + dateTimeCreated
     if(dateTimeFinish) url += '&dateTimeFinish=' + dateTimeFinish
 
-    setDeviceLog(await get(`/devices/log/${id}` + url))
+    let log = await get(`/devices/log/${id}` + url)
+    setDeviceLog(log.data)
+    setTotalPages(log.total)
   }
 
   const handleChangePagination = async (page: any) => {
@@ -86,6 +94,9 @@ export default function Device({ params }: { params: { id: string } }) {
               <TextField id="outlined-basic" onChange={(e) => setTemperature(e.target.value)} fullWidth label="Temperatura" variant="outlined" />
               <TextField id="outlined-basic" onChange={(e) => setNitrite(e.target.value)} fullWidth label="Nitrito" variant="outlined" />
               <TextField id="outlined-basic" onChange={(e) => setPh(e.target.value)} fullWidth label="PH" variant="outlined" />
+              <TextField id="outlined-basic" onChange={(e) => setAlkalinity(e.target.value)} fullWidth label="Alcalinidade" variant="outlined" />
+              <TextField id="outlined-basic" onChange={(e) => setTransparency(e.target.value)} fullWidth label="Transparência" variant="outlined" />
+              <TextField id="outlined-basic" onChange={(e) => setOxygen(e.target.value)} fullWidth label="Oxigênio" variant="outlined" />
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   label="Criado em"
@@ -141,6 +152,18 @@ export default function Device({ params }: { params: { id: string } }) {
                   <h4>Nitrito: </h4>
                   <span>{device?.Device_Log[0]?.nitrite}</span>
                 </div>
+                <div className={styles.wrap}>
+                  <h4>Alcalinidade: </h4>
+                  <span>{device?.Device_Log[0]?.alkalinity}</span>
+                </div>
+                <div className={styles.wrap}>
+                  <h4>Transparência: </h4>
+                  <span>{device?.Device_Log[0]?.transparency}</span>
+                </div>
+                <div className={styles.wrap}>
+                  <h4>Oxigênio: </h4>
+                  <span>{device?.Device_Log[0]?.oxygen}</span>
+                </div>
               </div>
             </div>
             <Divider orientation="vertical"/>
@@ -154,6 +177,9 @@ export default function Device({ params }: { params: { id: string } }) {
                       <TableCell align="right">PH</TableCell>
                       <TableCell align="right">Temperatura</TableCell>
                       <TableCell align="right">Nitrito</TableCell>
+                      <TableCell align="right">Alcalinidade</TableCell>
+                      <TableCell align="right">Transparência</TableCell>
+                      <TableCell align="right">Oxigênio</TableCell>
                       <TableCell align="right">Data / Hora</TableCell>
                     </TableRow>
                   </TableHead>
@@ -171,6 +197,9 @@ export default function Device({ params }: { params: { id: string } }) {
                             <TableCell align="right">{row.ph}</TableCell>
                             <TableCell align="right">{row.temperature}</TableCell>
                             <TableCell align="right">{row.nitrite}</TableCell>
+                            <TableCell align="right">{row.alkalinity}</TableCell>
+                            <TableCell align="right">{row.transparency}</TableCell>
+                            <TableCell align="right">{row.oxygen}</TableCell>
                             <TableCell align="right">{row.created_at.slice(0,10).split('-').reverse().join("/")} {row.created_at.slice(11, 19)}</TableCell>
                           </TableRow>
                         ))

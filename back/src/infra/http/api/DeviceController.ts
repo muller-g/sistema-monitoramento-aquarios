@@ -56,7 +56,12 @@ export default class DeviceController {
                     where: {},
                     include: {
                         Device_Image: true,
-                        Device_Log: true
+                        Device_Log: {
+                            orderBy: {
+                              created_at: 'desc',
+                            },
+                            take: 1,
+                          },
                     },
                     take: 25,
                     skip: 0
@@ -97,7 +102,7 @@ export default class DeviceController {
                         device_id: device_id
                     },
                     take: 9,
-                    skip: page ? (page * 9) : 0
+                    skip: (page - 1) * 9
                 };
 
                 if(params.page) {
@@ -132,21 +137,63 @@ export default class DeviceController {
                     };
                 }
 
-                if(params.dateTimeCreated) {
+                if(params.alkalinity) {
+                    filterParams.where.alkalinity = {
+                        contains: params.alkalinity,
+                        mode: 'insensitive'
+                    };
+                }
+
+                if(params.transparency) {
+                    filterParams.where.transparency = {
+                        contains: params.transparency,
+                        mode: 'insensitive'
+                    };
+                }
+
+                if(params.oxygen) {
+                    filterParams.where.oxygen = {
+                        contains: params.oxygen,
+                        mode: 'insensitive'
+                    };
+                }
+
+                if (params.dateTimeCreated) {
                     let startOfDay;
                     let endOfDay;
                     let dateTimeFinish;
-
+                
                     const dateTimeCreated = new Date(Number(params.dateTimeCreated));
-                    startOfDay = new Date(dateTimeCreated.setHours(0, 0, 0, 0));
-                    endOfDay = new Date(dateTimeCreated.setHours(23, 59, 59, 999));
-                    
-                    if(params.dateTimeFinish){
+                
+                    startOfDay = new Date(Date.UTC(
+                        dateTimeCreated.getUTCFullYear(),
+                        dateTimeCreated.getUTCMonth(),
+                        dateTimeCreated.getUTCDate(),
+                        0, 0, 0, 0
+                    ));
+                
+                    endOfDay = new Date(Date.UTC(
+                        dateTimeCreated.getUTCFullYear(),
+                        dateTimeCreated.getUTCMonth(),
+                        dateTimeCreated.getUTCDate(),
+                        23, 59, 59, 999
+                    ));
+                
+                    if (params.dateTimeFinish) {
                         dateTimeFinish = new Date(Number(params.dateTimeFinish));
-                        endOfDay = new Date(dateTimeFinish.setHours(23, 59, 59, 999));
+                        endOfDay = new Date(Date.UTC(
+                            dateTimeFinish.getUTCFullYear(),
+                            dateTimeFinish.getUTCMonth(),
+                            dateTimeFinish.getUTCDate(),
+                            23, 59, 59, 999
+                        ));
                     }
-
-
+                
+                    console.log({
+                        gte: startOfDay.toISOString(),
+                        lt: endOfDay.toISOString()
+                    });
+                
                     filterParams.where.created_at = {
                         gte: startOfDay.toISOString(),
                         lt: endOfDay.toISOString()
@@ -171,13 +218,16 @@ export default class DeviceController {
         app.post("/api/devices/log/:id", /* EnsureUserToken.validate, */ async (req: Request, res: Response) => {
             try {
                 const device_id: string = req.params.id;
-                const { ammonia, nitrite, ph, temperature } = req.body;
+                const { ammonia, nitrite, ph, temperature, alkalinity, transparency, oxygen } = req.body;
 
                 const deviceLog: any = {
                     ammonia: ammonia,
                     nitrite: nitrite,
                     ph: ph,
-                    temperature: temperature
+                    temperature: temperature,
+                    alkalinity: alkalinity,
+                    transparency: transparency,
+                    oxygen: oxygen,
                 }
                 
                 return res.status(200).json(await DeviceService.createLog(device_id, deviceLog));

@@ -30,7 +30,10 @@ export default class DeviceService {
 
     static async uploadImage(imageData: any, device_id: string | undefined){
         try {
-            return await prisma.device_Image.create({
+            return await prisma.device_Image.update({
+                where: {
+                    device_id: device_id
+                },
                 data: {
                     filename: imageData.filename,
                     mimetype: imageData.mimetype,
@@ -40,6 +43,7 @@ export default class DeviceService {
                 }
             });
         } catch (e: any){
+            console.log(e.message)
             return e.message;
         }
     }
@@ -67,21 +71,19 @@ export default class DeviceService {
         }
     }
 
-    static async getLog(filter?: any){
+    static async getLog(filter?: any) {
         try {
             let totalItems = await prisma.device_Log.count({
-                where: {
-                    device_id: filter.device_id
-                }
+                where: filter.where
             });
-
+    
             let obj = {
                 total: totalItems,
                 data: await prisma.device_Log.findMany(filter)
-            }
-
+            };
+    
             return obj;
-        } catch (e: any){
+        } catch (e: any) {
             return e.message;
         }
     }

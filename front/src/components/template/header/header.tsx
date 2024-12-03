@@ -5,8 +5,8 @@ import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import styles from "./header.module.css";
-import { useEffect, useState } from "react";
 
 export default function Header() {
     const router = useRouter();

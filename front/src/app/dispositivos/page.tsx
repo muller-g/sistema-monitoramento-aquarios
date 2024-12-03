@@ -136,6 +136,33 @@ export default function Devices() {
                                 PH
                               </Typography>
                               { dev?.Device_Log[0]?.ph ? " - " + dev?.Device_Log[0]?.ph + " - " : " - " }
+                              <Typography
+                                sx={{ display: 'inline' }}
+                                component="span"
+                                variant="body2"
+                                color="text.primary"
+                              >
+                                Alcalinidade
+                              </Typography>
+                              { dev?.Device_Log[0]?.alkalinity ? " - " + dev?.Device_Log[0]?.alkalinity + " - " : " - " }
+                              <Typography
+                                sx={{ display: 'inline' }}
+                                component="span"
+                                variant="body2"
+                                color="text.primary"
+                              >
+                                Transparência
+                              </Typography>
+                              { dev?.Device_Log[0]?.transparency ? " - " + dev?.Device_Log[0]?.transparency + " - " : " - " }
+                              <Typography
+                                sx={{ display: 'inline' }}
+                                component="span"
+                                variant="body2"
+                                color="text.primary"
+                              >
+                                Oxigênio
+                              </Typography>
+                              { dev?.Device_Log[0]?.oxygen ? " - " + dev?.Device_Log[0]?.oxygen + " - " : " - " }
                             </div>
                             <div>
                               <ModeEditIcon onClick={() => setOpen({id: dev?.id, open: true})} style={{color: "green", cursor: "pointer"}}/>
