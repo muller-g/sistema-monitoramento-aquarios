@@ -188,12 +188,7 @@ export default class DeviceController {
                             23, 59, 59, 999
                         ));
                     }
-                
-                    console.log({
-                        gte: startOfDay.toISOString(),
-                        lt: endOfDay.toISOString()
-                    });
-                
+
                     filterParams.where.created_at = {
                         gte: startOfDay.toISOString(),
                         lt: endOfDay.toISOString()
