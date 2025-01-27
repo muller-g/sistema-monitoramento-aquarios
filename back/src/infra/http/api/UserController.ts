@@ -14,7 +14,7 @@ export default class UserController {
     private initializeRoutes() {
         logger.info("User routes start");
 
-        app.post("/api/users", EnsureUserToken.validate, async (req: Request, res: Response) => {
+        app.post("/api/users", /* EnsureUserToken.validate, */ async (req: Request, res: Response) => {
             try {
                 const { name, email, user_class, password, course, role } = req.body;
                 const user: User = await User.createUser(
@@ -27,8 +27,8 @@ export default class UserController {
                 );
     
                 return res.status(200).json(await UserService.create(user));
-            } catch(e){
-                return res.status(500).json("Error");
+            } catch(e: any){
+                return res.status(500).json(e.message);
             }
         });
 

@@ -201,6 +201,113 @@ export default class DeviceController {
             } 
         });
 
+        app.get("/api/devices-download/log/:id", EnsureUserToken.validate, async (req: Request, res: Response) => {
+            try {
+                let params: any = req.query;
+                const device_id: string = req.params.id;
+
+                let filterParams: any = { 
+                    where: {
+                        device_id: device_id
+                    },
+                };
+
+                if(params.page) {
+                    filterParams.skip = parseInt(params.page) 
+                }
+
+                if(params.ammonia) {
+                    filterParams.where.ammonia = {
+                        contains: params.ammonia,
+                        mode: 'insensitive'
+                    };
+                }
+                
+                if(params.temperature) {
+                    filterParams.where.temperature = {
+                        contains: params.temperature,
+                        mode: 'insensitive'
+                    };
+                }
+                
+                if(params.nitrite) {
+                    filterParams.where.nitrite = {
+                        contains: params.nitrite,
+                        mode: 'insensitive'
+                    };
+                }
+
+                if(params.ph) {
+                    filterParams.where.ph = {
+                        contains: params.ph,
+                        mode: 'insensitive'
+                    };
+                }
+
+                if(params.alkalinity) {
+                    filterParams.where.alkalinity = {
+                        contains: params.alkalinity,
+                        mode: 'insensitive'
+                    };
+                }
+
+                if(params.transparency) {
+                    filterParams.where.transparency = {
+                        contains: params.transparency,
+                        mode: 'insensitive'
+                    };
+                }
+
+                if(params.oxygen) {
+                    filterParams.where.oxygen = {
+                        contains: params.oxygen,
+                        mode: 'insensitive'
+                    };
+                }
+
+                if (params.dateTimeCreated) {
+                    let startOfDay;
+                    let endOfDay;
+                    let dateTimeFinish;
+                
+                    const dateTimeCreated = new Date(Number(params.dateTimeCreated));
+                
+                    startOfDay = new Date(Date.UTC(
+                        dateTimeCreated.getUTCFullYear(),
+                        dateTimeCreated.getUTCMonth(),
+                        dateTimeCreated.getUTCDate(),
+                        0, 0, 0, 0
+                    ));
+                
+                    endOfDay = new Date(Date.UTC(
+                        dateTimeCreated.getUTCFullYear(),
+                        dateTimeCreated.getUTCMonth(),
+                        dateTimeCreated.getUTCDate(),
+                        23, 59, 59, 999
+                    ));
+                
+                    if (params.dateTimeFinish) {
+                        dateTimeFinish = new Date(Number(params.dateTimeFinish));
+                        endOfDay = new Date(Date.UTC(
+                            dateTimeFinish.getUTCFullYear(),
+                            dateTimeFinish.getUTCMonth(),
+                            dateTimeFinish.getUTCDate(),
+                            23, 59, 59, 999
+                        ));
+                    }
+
+                    filterParams.where.created_at = {
+                        gte: startOfDay.toISOString(),
+                        lt: endOfDay.toISOString()
+                    };
+                }
+
+                return res.status(200).json(await DeviceService.getLog(filterParams));
+            } catch(e){
+                return res.status(500).json("Error");
+            } 
+        });
+
         app.get("/api/devices/:id", EnsureUserToken.validate, async (req: Request, res: Response) => {
             try {
                 const device_id: string = req.params.id;

@@ -1,14 +1,16 @@
 import { Button } from "@mui/material";
 import styles from "./export.module.css";
 import * as XLSX from 'xlsx';
+import { get } from "@/hooks/useApi";
 
 interface Export {
-    data: any,
     name: string,
-    specie: string
+    specie: string,
+    filter: string,
+    id: string
 }
 
-export default function ExportContent({ data, name, specie }: Export) {
+export default function ExportContent({ name, specie, filter, id }: Export) {
     async function convertData(data: any[]){
         let logSheet = [
             ['Nome do dispositivo', name, 'Espécie', specie],
@@ -20,8 +22,10 @@ export default function ExportContent({ data, name, specie }: Export) {
         return logSheet;
     };
 
-    async function handleExport(){  
-        let arr = await convertData(data);
+    async function handleExport(){
+        let log = await get(filter);
+
+        let arr = await convertData(log.data);
 
         const ws = XLSX.utils.aoa_to_sheet(arr);
         const wb = XLSX.utils.book_new();

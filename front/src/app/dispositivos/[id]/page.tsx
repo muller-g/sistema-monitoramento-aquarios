@@ -1,27 +1,26 @@
 'use client';
 import Container from "@/components/container/container";
+import ExportContent from "@/components/export/export";
+import { get } from "@/hooks/useApi";
+import useAuth from "@/hooks/useAuth";
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { LoadingButton } from "@mui/lab";
 import { TextField } from "@mui/material";
 import Divider from '@mui/material/Divider';
+import Pagination from '@mui/material/Pagination';
+import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import styles from "./page.module.css";
-import { get } from "@/hooks/useApi";
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import dayjs from 'dayjs';
-import useAuth from "@/hooks/useAuth";
-import ExportContent from "@/components/export/export";
-import Pagination from '@mui/material/Pagination';
-import Stack from '@mui/material/Stack';
 
 export default function Device({ params }: { params: { id: string } }) {
   const isAuthenticated = useAuth();
@@ -43,6 +42,7 @@ export default function Device({ params }: { params: { id: string } }) {
   const [device, setDevice] = useState<any>();
   const [page, setPage] = useState<any>(0);
   const [totalPages, setTotalPages] = useState<any>(0);
+  const [filterUrl, setFilterUrl] = useState<string>('');
   
   const { id } = params;
 
@@ -51,6 +51,7 @@ export default function Device({ params }: { params: { id: string } }) {
       let deviceInfo: any = await get(`/devices/${id}`);
       let log: any = await get(`/devices/log/${id}/?page=${page}`);
 
+      setFilterUrl(`/devices-download/log/${id}/?page=${page}`)
       setDevice(deviceInfo)
       setDeviceLog(log.data)
       setTotalPages(log.total)
@@ -73,6 +74,7 @@ export default function Device({ params }: { params: { id: string } }) {
     if(dateTimeFinish) url += '&dateTimeFinish=' + dateTimeFinish
 
     let log = await get(`/devices/log/${id}` + url)
+    setFilterUrl(`/devices-download/log/${id}` + url)
     setDeviceLog(log.data)
     setTotalPages(log.total)
   }
@@ -169,7 +171,7 @@ export default function Device({ params }: { params: { id: string } }) {
             <Divider orientation="vertical"/>
             <div className={styles.wrapp_table}>
               <TableContainer>
-                <ExportContent data={deviceLog} name={device?.name} specie={device?.specie}/>
+                <ExportContent name={device?.name} specie={device?.specie} filter={filterUrl} id={id}/>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                   <TableHead>
                     <TableRow>
